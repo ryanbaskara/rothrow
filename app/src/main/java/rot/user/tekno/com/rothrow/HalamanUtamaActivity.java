@@ -86,6 +86,9 @@ public class HalamanUtamaActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_halaman_utama);
 
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+
         spjenis = (TextInputEditText)findViewById(R.id.et_pilih_jns_sampah);
         spMode = (TextInputEditText)findViewById(R.id.et_pilih_modesampah);
         etHarga = (EditText) findViewById(R.id.JnsSampahTxt);
@@ -112,14 +115,11 @@ public class HalamanUtamaActivity extends AppCompatActivity
         }
         //Log.d("token", token);
 
-        txtNamaUser = (TextView) findViewById(R.id.txt_nav_home);
-        //Log.d("Nama nya : ",namaUser);
-        //txtNamaUser.setText(namaUser, TextView.BufferType.EDITABLE);
+        txtNamaUser = (TextView) headerView.findViewById(R.id.txt_nav_home);
+        txtNamaUser.setText(namaUser, TextView.BufferType.EDITABLE);
 
-        txtEmailUser = (TextView) findViewById(R.id.txt_nav_email_home);
-        //txtEmailUser.setText(email, TextView.BufferType.EDITABLE);
-
-        editor = sharedPrefs.edit();
+        txtEmailUser = (TextView) headerView.findViewById(R.id.txt_nav_email_home);
+        txtEmailUser.setText(email, TextView.BufferType.EDITABLE);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -243,7 +243,6 @@ public class HalamanUtamaActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         btnSave.setOnClickListener(new View.OnClickListener() {
