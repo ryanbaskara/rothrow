@@ -23,12 +23,12 @@ public class ListPengambil {
     public double lat;
     @SerializedName("ro_lang")
     public double lang;
-    @SerializedName("harga")
-    public String harga;
+    @SerializedName("ro_harga")
+    public int harga;
     @SerializedName("ro_status")
     public String status;
 
-    public ListPengambil(int ido, int id, String nama, String jenisSp, String modePb, String alamat, double lat, double lang, String harga, String status) {
+    public ListPengambil(int ido, int id, String nama, String jenisSp, String modePb, String alamat, double lat, double lang, int harga, String status) {
         this.ido = ido;
         this.id = id;
         this.nama = nama;
@@ -105,11 +105,11 @@ public class ListPengambil {
         this.lang = lang;
     }
 
-    public String getHarga() {
+    public int getHarga() {
         return harga;
     }
 
-    public void setHarga(String harga) {
+    public void setHarga(int harga) {
         this.harga = harga;
     }
 

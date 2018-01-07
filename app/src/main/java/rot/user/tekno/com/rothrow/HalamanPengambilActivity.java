@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -41,73 +43,50 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rot.user.tekno.com.rothrow.fragment.HalamanPengambilFragment;
+import rot.user.tekno.com.rothrow.fragment.ProfilePengambilFragment;
 import rot.user.tekno.com.rothrow.model.ListPengambil;
 import rot.user.tekno.com.rothrow.util.Constant;
 
 public class HalamanPengambilActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
-    private GoogleMap mMap;
-    float zoomLevel = 16.0f;
     private String email;
     private String namaUser;
-    private String token;
-    private String url;
 
-    Gson gson;
     TextView txtNamaUser;
     TextView txtEmailUser;
-    TextView nm;
-    TextView jnsSmph;
-    TextView hrg;
-    TextView mdSmph;
-    RelativeLayout tlTampil;
     private SharedPreferences.Editor editor;
-    List<ListPengambil> list_data = new ArrayList<>();
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_halaman_pengambil);
-        gson = new Gson();
-        tlTampil = (RelativeLayout) findViewById(R.id.layoutPopup);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View headerView = navigationView.getHeaderView(0);
         final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedPrefs.edit();
         String getUserData = sharedPrefs.getString(Constant.KEY_SHAREDPREFS_USER_DATA, null);
-        String getToken = sharedPrefs.getString(Constant.KEY_SHAREDPREFS_TOKEN, null);
         if (getUserData != null) {
             JSONObject json = null;
             try {
                 json = new JSONObject(getUserData);
                 namaUser = json.getString("ro_nama_pengguna");
                 email = json.getString("ro_email");
-                //Log.d("id adalah: ",email);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        if (getToken != null) {
-            token = getToken;
-        }
-        //Log.d("token", token);
 
-        txtNamaUser = (TextView) findViewById(R.id.et_nama_user);
-        //txtNamaUser.setText(namaUser);
+        txtNamaUser = (TextView) headerView.findViewById(R.id.et_nama_user);
+        txtNamaUser.setText(namaUser);
 
-        txtEmailUser = (TextView) findViewById(R.id.et_email_user);
-        //txtEmailUser.setText(email);
+        txtEmailUser = (TextView) headerView.findViewById(R.id.et_email_user);
+        txtEmailUser.setText(email);
 
-        nm = (TextView) findViewById(R.id.tv_nama_pembuang);
-        jnsSmph = (TextView) findViewById(R.id.tv_jns_sampah);
-        hrg = (TextView) findViewById(R.id.tv_harga);
-        mdSmph = (TextView) findViewById(R.id.tv_mode_sampah);
-
-        editor = sharedPrefs.edit();
-
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -116,10 +95,10 @@ public class HalamanPengambilActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        getDataPosisi();
+        HalamanPengambilFragment pf = new HalamanPengambilFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().replace(R.id.container, pf).commit();
+        navigationView.getMenu().getItem(0).setChecked(true);
 
     }
 
@@ -162,15 +141,21 @@ public class HalamanPengambilActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            Intent intent = new Intent(HalamanPengambilActivity.this, HalamanUtamaActivity.class);
-            startActivity(intent);
+            toolbar.setTitle("Home");
+            HalamanPengambilFragment pf = new HalamanPengambilFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.container, pf).commit();
         } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(HalamanPengambilActivity.this, ProfilePengambilActivity.class);
-            startActivity(intent);
+            toolbar.setTitle("Profile");
+            ProfilePengambilFragment pf = new ProfilePengambilFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.container, pf).commit();
         } else if (id == R.id.nav_slideshow) {
             logout();
             Intent intent = new Intent(HalamanPengambilActivity.this, Login.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -185,92 +170,8 @@ public class HalamanPengambilActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Add a marker in Jakarta and move the camera
-        LatLng jakarta = new LatLng(-6.252884, 106.8469404);
-        mMap.addMarker(new MarkerOptions().position(jakarta).title("Marker in Jakarta"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(jakarta));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(jakarta, zoomLevel));
-    }
-
-    public void getDataPosisi(){
-        url = Constant.ENDPOINT_GET_ORDER;
-        final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final String getLocalData = sharedPrefs.getString(Constant.KEY_SHAREDPREFS_TOKEN, null);
-        if (getLocalData!=null) {
-            token = getLocalData;
-        }
-        StringRequest req = new StringRequest(Request.Method.GET, url, successListener(), errListener()) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", "Bearer " + token);
-                return params;
-            }
-        };
-        Log.d("token", token);
-        AppsController.getInstance().addToRequestQueue(req);
-    }
-
-    private Response.ErrorListener errListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public  void onErrorResponse(VolleyError error) {
-                Log.e("Error", "Error get view booking");
-                Log.e("Error", String.valueOf(error));
-            }
-        };
-    }
-    private Response.Listener<String> successListener(){
-        return new Response.Listener<String>(){
-            @Override
-            public void onResponse(String response){
-                try{
-                    JSONObject json = new JSONObject(response);
-                    if (json.getInt("status") == 200) {
-                        String jsonOutput = json.getString("data");
-                        Type listType = new TypeToken<List<ListPengambil>>(){}.getType();
-                        list_data = (List<ListPengambil>) gson.fromJson(jsonOutput, listType);
-
-                    } else {
-                        //callback.onFinish(false, "failed");
-                    }
-                    putMarker();
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-    }
-
-    public void putMarker(){
-        mMap.clear();
-        Log.d("List data: ",list_data.toString());
-        for(int i = 0; i<list_data.size(); i++){
-            LatLng newMarker = new LatLng(list_data.get(i).getLat(), list_data.get(i).getLang());
-            mMap.addMarker(new MarkerOptions().position(newMarker).title(list_data.get(i).getAlamat())).setTag(i);
-            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker) {
-                    int x = (int) marker.getTag();
-                    ListPengambil dataBaru = list_data.get(x);
-                    tlTampil.setVisibility(View.VISIBLE);
-                    nm.setText(dataBaru.getNama().toString(), TextView.BufferType.EDITABLE);
-                    jnsSmph.setText(dataBaru.getJenisSp().toString(), TextView.BufferType.EDITABLE);
-                    hrg.setText(dataBaru.getHarga().toString(), TextView.BufferType.EDITABLE);
-                    mdSmph.setText(dataBaru.getModePb().toString(), TextView.BufferType.EDITABLE);
-                    return true;
-                }
-            });
-            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                @Override
-                public void onMapClick(LatLng latLng) {
-                    tlTampil.setVisibility(View.GONE);
-                }
-            });
-        }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container);
+        fragment.onActivityResult(requestCode, resultCode, data);
     }
 }

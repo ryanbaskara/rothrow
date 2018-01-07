@@ -2,12 +2,14 @@ package rot.user.tekno.com.rothrow;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rot.user.tekno.com.rothrow.model.ListPengambil;
@@ -18,7 +20,7 @@ import rot.user.tekno.com.rothrow.model.ListPengambil;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
     private Context context;
-    private List<ListPengambil> historyModel;
+    private List<ListPengambil> historyModel = new ArrayList<>();
 
     public HistoryAdapter(Context context, List<ListPengambil> historyModel) {
         this.context = context;
@@ -33,20 +35,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent i = new Intent(context, FaqActivity.class);
-//                i.putExtra("nama", faqHomeModelsList.get(position).getNamaFaq());
-//                i.putExtra("nama", "apa");
-//                context.startActivity(i);
-//            }
-//        });
+        ListPengambil data = historyModel.get(position);
+        holder.hargaSampah.setText(String.valueOf(data.getHarga()));
+        holder.jenisSampah.setText(data.getJenisSp());
+        holder.namaPembuang.setText(data.getNama());
+        holder.statusSampah.setText(data.getStatus());
     }
 
     @Override
     public int getItemCount() {
-        return 4;
+        return historyModel.size();
     }
 
 
@@ -58,15 +56,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         ImageView fotoPembuang;
         public ViewHolder(View itemView) {
             super(itemView);
-
-              namaPembuang = (TextView) itemView.findViewById(R.id.tv_nama_siswa);
-              jenisSampah = (TextView) itemView.findViewById(R.id.tv_jenissampah);
-              hargaSampah = (TextView) itemView.findViewById(R.id.tv_hargasampah);
-              statusSampah = (TextView) itemView.findViewById(R.id.tv_statussampah);
-
-//            namaSiswa = (TextView) itemView.findViewById(R.id.tv_nama_siswa);
-//            alamatSiswa = (TextView) itemView.findViewById(R.id.tv_alamat_siswa);
-            fotoPembuang = (ImageView) itemView.findViewById(R.id.iv_gambar);
+                namaPembuang = (TextView) itemView.findViewById(R.id.tv_nama_siswa);
+                jenisSampah = (TextView) itemView.findViewById(R.id.tv_jenissampah);
+                hargaSampah = (TextView) itemView.findViewById(R.id.tv_hargasampah);
+                statusSampah = (TextView) itemView.findViewById(R.id.tv_statussampah);
+                fotoPembuang = (ImageView) itemView.findViewById(R.id.iv_gambar);
         }
     }
 

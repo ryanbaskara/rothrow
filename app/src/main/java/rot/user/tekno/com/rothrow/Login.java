@@ -35,8 +35,25 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedPrefs.edit();
+        String getUserData = sharedPrefs.getString(Constant.KEY_SHAREDPREFS_USER_DATA, null);
+        String getToken = sharedPrefs.getString(Constant.KEY_SHAREDPREFS_TOKEN, null);
+        if (getUserData != null && getToken !=null) {
+            JSONObject json = null;
+            try {
+                json = new JSONObject(getUserData);
+                String role = json.getString("role");
+                if (role.equals("2")) {
+                    startActivity(new Intent(Login.this, HalamanPengambilActivity.class));
+                } else {
+                    startActivity(new Intent(Login.this, HalamanUtamaActivity.class));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         mUsername = (EditText) findViewById(R.id.tUsername);
         mPasswordView = (EditText) findViewById(R.id.tPassword);
         TextView tvSignUp = (TextView) findViewById(R.id.daftar_user);
@@ -111,7 +128,9 @@ public class Login extends AppCompatActivity {
                         } else {
                             intent = new Intent(Login.this, HalamanUtamaActivity.class);
                         }
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
+                        finish();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

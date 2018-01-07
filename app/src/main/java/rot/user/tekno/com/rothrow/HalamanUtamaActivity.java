@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -47,39 +48,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rot.user.tekno.com.rothrow.fragment.HalamanPengambilFragment;
+import rot.user.tekno.com.rothrow.fragment.HalamanUtamaFragment;
+import rot.user.tekno.com.rothrow.fragment.ProfilePengambilFragment;
 import rot.user.tekno.com.rothrow.util.Constant;
 
 public class HalamanUtamaActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
-    private GoogleMap mMap;
-    float zoomLevel = 16.0f;
+    Toolbar toolbar;
     private String email;
     private String namaUser;
     private String token;
     public  String idus;
-    public double lt;
-    public double lg;
-    EditText etHarga;
-    TextInputEditText spMode;
     TextView txtNamaUser;
     TextView txtEmailUser;
-    LinearLayout tlTampil;
-    Button btnSave;
     private SharedPreferences.Editor editor;
-    TextInputEditText spjenis;
-    CharSequence jenis[] = {
-            "Sampah Kering",
-            "Sampah Basah"
-    };
-
-    CharSequence modeSampah[] = {
-            "Sharing Fee",
-            "Harga Sudah Ditentukan",
-            "Pembuang Menentukan Harga",
-            "Free"
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,13 +73,8 @@ public class HalamanUtamaActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View headerView = navigationView.getHeaderView(0);
 
-        spjenis = (TextInputEditText)findViewById(R.id.et_pilih_jns_sampah);
-        spMode = (TextInputEditText)findViewById(R.id.et_pilih_modesampah);
-        etHarga = (EditText) findViewById(R.id.JnsSampahTxt);
-        btnSave = (Button) findViewById(R.id.btn_order);
-
-        tlTampil = (LinearLayout) findViewById(R.id.layoutPU);
         final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedPrefs.edit();
         String getUserData = sharedPrefs.getString(Constant.KEY_SHAREDPREFS_USER_DATA, null);
         String getToken = sharedPrefs.getString(Constant.KEY_SHAREDPREFS_TOKEN, null);
         if (getUserData != null) {
@@ -105,7 +84,6 @@ public class HalamanUtamaActivity extends AppCompatActivity
                 idus = json.getString("id");
                 namaUser = json.getString("ro_nama_pengguna");
                 email = json.getString("ro_email");
-                //Log.d("id adalah: ",email);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -113,7 +91,6 @@ public class HalamanUtamaActivity extends AppCompatActivity
         if (getToken != null) {
             token = getToken;
         }
-        //Log.d("token", token);
 
         txtNamaUser = (TextView) headerView.findViewById(R.id.txt_nav_home);
         txtNamaUser.setText(namaUser, TextView.BufferType.EDITABLE);
@@ -121,120 +98,7 @@ public class HalamanUtamaActivity extends AppCompatActivity
         txtEmailUser = (TextView) headerView.findViewById(R.id.txt_nav_email_home);
         txtEmailUser.setText(email, TextView.BufferType.EDITABLE);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        final SearchView search = (SearchView) findViewById(R.id.svCari);
-        //String cr = search.getQuery().toString();
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                String location = query.toString();
-                List<Address> addressList = null;
-                if (location != null || !location.equals("")) {
-                    Geocoder geocoder = new Geocoder(HalamanUtamaActivity.this);
-                    try {
-                        addressList = geocoder.getFromLocationName(location, 1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Address address = addressList.get(0);
-                    LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-                    lt = address.getLatitude();
-                    lg = address.getLongitude();
-                    mMap.clear();
-                    mMap.addMarker(new MarkerOptions().position(latLng).title(query));
-                    mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                        @Override
-                        public boolean onMarkerClick(Marker marker) {
-                            tlTampil.setVisibility(View.VISIBLE);
-                            return true;
-                        }
-                    });
-                    spjenis.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            etHarga.setVisibility(View.VISIBLE);
-                            spMode.setVisibility(View.VISIBLE);
-                            AlertDialog.Builder builder = new AlertDialog.Builder(HalamanUtamaActivity.this);
-                            builder.setTitle("-- Pilih Jenis Sampah --");
-                            builder.setItems(jenis, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    spjenis.setText(jenis[i]);
-                                }
-                            });
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-                        }
-                    });
-                    spMode.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(HalamanUtamaActivity.this);
-                            builder.setTitle("-- Pilih Mode Pembuangan --");
-                            builder.setItems(modeSampah, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    spMode.setText(modeSampah[i]);
-                                    if(modeSampah[1] == "Free"){
-                                        etHarga.setText("0", TextView.BufferType.EDITABLE);
-                                    }
-                                }
-                            });
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
-                        }
-                    });
-                    mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                        @Override
-                        public void onMapClick(LatLng latLng) {
-                            tlTampil.setVisibility(View.GONE);
-                            spMode.setVisibility(View.GONE);
-                            etHarga.setVisibility(View.GONE);
-                        }
-                    });
-                }
-                btnSave.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-//                        Toast.makeText(HalamanUtamaActivity.this,"Masuk sini",Toast.LENGTH_LONG).show();
-                        String urlHal = Constant.ENDPOINT_INSERT_ORDER;
-                        Log.d("link ni: ", urlHal);
-                        StringRequest req = new StringRequest(Request.Method.POST, urlHal, successListener(), errListener()){
-                            @Override
-                            protected Map<String, String> getParams() throws AuthFailureError {
-                                Map<String, String> params = new HashMap<String, String>();
-                                params.put("id", idus);
-                                params.put("name", namaUser);
-                                params.put("jenis", spjenis.getText().toString());
-                                params.put("mode", spMode.getText().toString());
-                                params.put("alamat", search.getQuery().toString());
-                                params.put("lat", String.valueOf(lt));
-                                params.put("lang", String.valueOf(lg));
-                                params.put("harga", etHarga.getText().toString());
-                                params.put("status", "Waiting");
-
-                                return params;
-                            }
-                        };
-
-                        AppsController.getInstance().addToRequestQueue(req);
-//                        Intent intent = new Intent(HalamanUtamaActivity.this, HalamanUtamaActivity.class);
-//                        startActivity(intent);
-                    }
-                });
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -245,14 +109,10 @@ public class HalamanUtamaActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                spMode.setVisibility(View.GONE);
-                etHarga.setVisibility(View.GONE);
-                tlTampil.setVisibility(View.GONE);
-            }
-        });
+        HalamanUtamaFragment pf = new HalamanUtamaFragment();
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction().replace(R.id.container, pf).commit();
+        navigationView.getMenu().getItem(0).setChecked(true);
 
     }
 
@@ -295,18 +155,26 @@ public class HalamanUtamaActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            Intent intent = new Intent(HalamanUtamaActivity.this, HalamanUtamaActivity.class);
-            startActivity(intent);
+            toolbar.setTitle("Home");
+            HalamanUtamaFragment pf = new HalamanUtamaFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.container, pf).commit();
         } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(HalamanUtamaActivity.this, ProfileActivity.class);
-            startActivity(intent);
+            toolbar.setTitle("Profile");
+            ProfilePengambilFragment pf = new ProfilePengambilFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.container, pf).commit();
         } else if (id == R.id.nav_slideshow) {
             logout();
             Intent intent = new Intent(HalamanUtamaActivity.this, Login.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
+            finish();
         } else if(id == R.id.nav_history){
-            Intent intent = new Intent(HalamanUtamaActivity.this, HistoryActivity.class);
-            startActivity(intent);
+            toolbar.setTitle("History");
+            HistoryFragment pf = new HistoryFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.container, pf).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -318,50 +186,5 @@ public class HalamanUtamaActivity extends AppCompatActivity
         editor.putString(Constant.KEY_SHAREDPREFS_USER_DATA, null);
         editor.putString(Constant.KEY_SHAREDPREFS_LOGIN_STATUS, "0");
         editor.commit();
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Add a marker in Jakarta and move the camera
-        LatLng jakarta = new LatLng(-6.252884, 106.8469404);
-        mMap.addMarker(new MarkerOptions().position(jakarta).title("Marker in Jakarta"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(jakarta));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(jakarta, zoomLevel));
-    }
-
-    private Response.ErrorListener errListener() {
-        return new Response.ErrorListener() {
-            @Override
-            public  void onErrorResponse(VolleyError error) {
-                Log.e("Error", "Login");
-                Log.e("Error", String.valueOf(error));
-                Toast.makeText(HalamanUtamaActivity.this,error.toString(),Toast.LENGTH_LONG).show();
-            }
-        };
-    }
-
-    private Response.Listener<String> successListener() {
-        return new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try{
-                    Log.d("response", response);
-                    JSONObject json = new JSONObject(response);
-                    String message = json.getString("message");
-                    String status = json.getString("status");
-                    Log.d("message", message);
-                    if (status.equals("200"))
-                    {
-                        Toast.makeText(HalamanUtamaActivity.this,"Order Sukses",Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(HalamanUtamaActivity.this, HalamanUtamaActivity.class);
-                        startActivity(intent);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
     }
 }
