@@ -5,7 +5,7 @@ package rot.user.tekno.com.rothrow.util;
  */
 
 public class Constant {
-    public static final String BASE_URL = "http://192.168.43.131:2828/";
+    public static final String BASE_URL = "http://yippytech.com:2828/";
 
     public static final String ENDPOINT_LOGIN = BASE_URL + "user/auth";
     public static final String ENDPOINT_REGISTER_USER = BASE_URL + "user/regis";
