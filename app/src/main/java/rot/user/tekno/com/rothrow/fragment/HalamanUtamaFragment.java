@@ -59,6 +59,7 @@ import rot.user.tekno.com.rothrow.AppsController;
 import rot.user.tekno.com.rothrow.HalamanUtamaActivity;
 import rot.user.tekno.com.rothrow.R;
 import rot.user.tekno.com.rothrow.util.Constant;
+import rot.user.tekno.com.rothrow.util.Screen;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -84,6 +85,7 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
     LinearLayout tlTampil;
     View view;
     Button btnSave;
+    SearchView search;
     private SharedPreferences.Editor editor;
     TextInputEditText spjenis;
     CharSequence jenis[] = {
@@ -141,11 +143,19 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        final SearchView search = (SearchView) view.findViewById(R.id.svCari);
+        final LinearLayout llSearch = (LinearLayout) view.findViewById(R.id.llSearch);
+        final ViewGroup.LayoutParams params = llSearch.getLayoutParams();
+
+
+        search = (SearchView) view.findViewById(R.id.svCari);
+
         //String cr = search.getQuery().toString();
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                params.width = Screen.getWidth(getContext()) - 96;
+                llSearch.setLayoutParams(params);
+
                 String location = query.toString();
                 List<Address> addressList = null;
                 if (location != null || !location.equals("")) {
@@ -195,8 +205,11 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     spMode.setText(modeSampah[i]);
-                                    if(modeSampah[1] == "Free"){
-                                        etHarga.setText("0", TextView.BufferType.EDITABLE);
+                                    if(modeSampah[i].equals("Free")){
+                                        etHarga.setText("0");
+                                        etHarga.setEnabled(false);
+                                    } else {
+                                        etHarga.setEnabled(true);
                                     }
                                 }
                             });
@@ -208,7 +221,7 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
                     lv_nampil_foto.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-//                            getFotoSampah(12);
+                            getFotoSampah(12);
                         }
                     });
                     mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -223,7 +236,6 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
                 btnSave.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-//                        Toast.makeText(HalamanUtamaActivity.this,"Masuk sini",Toast.LENGTH_LONG).show();
                         String urlHal = Constant.ENDPOINT_INSERT_ORDER;
                         Log.d("link ni: ", urlHal);
                         StringRequest req = new StringRequest(Request.Method.POST, urlHal, successListener(), errListener()){
@@ -245,8 +257,6 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
                         };
 
                         AppsController.getInstance().addToRequestQueue(req);
-//                        Intent intent = new Intent(HalamanUtamaActivity.this, HalamanUtamaActivity.class);
-//                        startActivity(intent);
                     }
                 });
                 return true;
@@ -345,7 +355,6 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inSampleSize = 2;
             final Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
-            ImageView imageView = (ImageView) view.findViewById(R.id.iv_foto_sampah);
             ExifInterface ei = null;
             try {
                 ei = new ExifInterface(file.getAbsolutePath());
@@ -375,10 +384,10 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
                     rotatedBitmap = bitmap;
             }
 
-            imageView.setImageBitmap(rotatedBitmap);
-            imageView.setMaxHeight(bitmap.getHeight());
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(0,0,0,0);
+            iv_foto.setImageBitmap(rotatedBitmap);
+            iv_foto.setMaxHeight(bitmap.getHeight());
+            iv_foto.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            iv_foto.setPadding(0,0,0,0);
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos); //bm is the bitmap object

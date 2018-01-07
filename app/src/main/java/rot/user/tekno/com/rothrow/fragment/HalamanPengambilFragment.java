@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.location.Location;
 import android.media.ExifInterface;
 import android.media.Image;
 import android.net.Uri;
@@ -61,6 +62,7 @@ import rot.user.tekno.com.rothrow.AppsController;
 import rot.user.tekno.com.rothrow.R;
 import rot.user.tekno.com.rothrow.model.ListPengambil;
 import rot.user.tekno.com.rothrow.util.Constant;
+import rot.user.tekno.com.rothrow.util.MLocation;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -86,6 +88,7 @@ public class HalamanPengambilFragment extends Fragment implements OnMapReadyCall
     private SharedPreferences.Editor editor;
     List<ListPengambil> list_data = new ArrayList<>();
     View view;
+    Location myLocation;
 
     public HalamanPengambilFragment() {
         // Required empty public constructor
@@ -98,6 +101,7 @@ public class HalamanPengambilFragment extends Fragment implements OnMapReadyCall
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_halaman_pengambil, container, false);
         gson = new Gson();
+        myLocation = MLocation.getLocation(getContext());
         tlTampil = (RelativeLayout) view.findViewById(R.id.layoutPopup);
         final SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         String getUserData = sharedPrefs.getString(Constant.KEY_SHAREDPREFS_USER_DATA, null);
@@ -188,6 +192,7 @@ public class HalamanPengambilFragment extends Fragment implements OnMapReadyCall
         return new Response.Listener<String>(){
             @Override
             public void onResponse(String response){
+                Log.d("respone",response);
                 try{
                     JSONObject json = new JSONObject(response);
                     if (json.getInt("status") == 200) {
@@ -226,11 +231,13 @@ public class HalamanPengambilFragment extends Fragment implements OnMapReadyCall
                     btnOrder.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-//                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-//                                    Uri.parse("http://maps.google.com/maps?saddr=-6.4704488,106.7441182&daddr="+
-//                                            String.valueOf(dataBaru.getLat())+","+String.valueOf(dataBaru.getLang())));
-//                            startActivity(intent);
-                            getFotoKtp(12);
+                            myLocation = MLocation.getLocation(getContext());
+                            Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                    Uri.parse("http://maps.google.com/maps?saddr="+
+                                            String.valueOf(myLocation.getLatitude())+","+String.valueOf(myLocation.getLongitude())+
+                                            "&daddr="+String.valueOf(dataBaru.getLat())+","+String.valueOf(dataBaru.getLang())));
+                            startActivity(intent);
+//                            getFotoKtp(12);
                         }
                     });
 

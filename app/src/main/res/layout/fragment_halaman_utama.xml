@@ -13,14 +13,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.v7.widget.SearchView
-        android:id="@+id/svCari"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="@drawable/rounded_white">
+    <LinearLayout
+        android:id="@+id/llSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    </android.support.v7.widget.SearchView>
+        <android.support.v7.widget.SearchView
+            android:id="@+id/svCari"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/rounded_white"/>
+    </LinearLayout>
+
 
     <LinearLayout
         android:id="@+id/layoutPU"
@@ -29,7 +34,7 @@
         android:layout_alignParentBottom="true"
         android:background="@color/colorWhite"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/et_pilih_jns"
