@@ -2,13 +2,16 @@ package rot.user.tekno.com.rothrow;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +34,9 @@ public class Login extends AppCompatActivity {
     private EditText mPasswordView;
     private SharedPreferences.Editor editor;
     private String yourToken;
+    TextView tv_bijak;
+    ImageView iv_show_pass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +60,12 @@ public class Login extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+        iv_show_pass = (ImageView) findViewById(R.id.iv_show_pass);
+        tv_bijak = (TextView) findViewById(R.id.tv_kebijakan);
+        tv_bijak.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+
+
         mUsername = (EditText) findViewById(R.id.tUsername);
         mPasswordView = (EditText) findViewById(R.id.tPassword);
         TextView tvSignUp = (TextView) findViewById(R.id.daftar_user);
@@ -62,6 +74,16 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(Login.this, RegistrasiActivity.class);
                 startActivity(intent);
+            }
+        });
+        iv_show_pass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mPasswordView.getTransformationMethod() != null){
+                    mPasswordView.setTransformationMethod(null);
+                } else {
+                    mPasswordView.setTransformationMethod(new PasswordTransformationMethod());
+                }
             }
         });
         Button btnLogin = (Button) findViewById(R.id.btn_login);

@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -59,6 +60,7 @@ import rot.user.tekno.com.rothrow.AppsController;
 import rot.user.tekno.com.rothrow.HalamanUtamaActivity;
 import rot.user.tekno.com.rothrow.R;
 import rot.user.tekno.com.rothrow.util.Constant;
+import rot.user.tekno.com.rothrow.util.MLocation;
 import rot.user.tekno.com.rothrow.util.Screen;
 
 import static android.app.Activity.RESULT_OK;
@@ -69,7 +71,7 @@ import static android.app.Activity.RESULT_OK;
 public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    float zoomLevel = 16.0f;
+    float zoomLevel = 13.0f;
     private String email;
     private String namaUser;
     private String token;
@@ -99,6 +101,7 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
             "Pembuang Menentukan Harga",
             "Free"
     };
+    Location myLocation;
 
     public HalamanUtamaFragment() {
         // Required empty public constructor
@@ -110,7 +113,7 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_halaman_utama, container, false);
-
+        myLocation = MLocation.getLocation(getContext());
         spjenis = (TextInputEditText)view.findViewById(R.id.et_pilih_jns_sampah);
         spMode = (TextInputEditText)view.findViewById(R.id.et_pilih_modesampah);
         etHarga = (EditText) view.findViewById(R.id.JnsSampahTxt);
@@ -216,20 +219,25 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
                             AlertDialog dialog = builder.create();
                             dialog.show();
                             lv_nampil_foto.setVisibility(View.VISIBLE);
+                            tv_nama_foto.setVisibility(View.VISIBLE);
                         }
                     });
                     lv_nampil_foto.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             getFotoSampah(12);
+                            iv_foto.setVisibility(View.VISIBLE);
                         }
                     });
                     mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                         @Override
                         public void onMapClick(LatLng latLng) {
                             tlTampil.setVisibility(View.GONE);
+                            lv_nampil_foto.setVisibility(View.GONE);
                             spMode.setVisibility(View.GONE);
                             etHarga.setVisibility(View.GONE);
+                            iv_foto.setVisibility(View.GONE);
+                            tv_nama_foto.setVisibility(View.GONE);
                         }
                     });
                 }
@@ -285,10 +293,10 @@ public class HalamanUtamaFragment extends Fragment implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        myLocation = MLocation.getLocation(getContext());
         // Add a marker in Jakarta and move the camera
-        LatLng jakarta = new LatLng(-6.252884, 106.8469404);
-        mMap.addMarker(new MarkerOptions().position(jakarta).title("Marker in Jakarta"));
+        LatLng jakarta = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+        //mMap.addMarker(new MarkerOptions().position(jakarta).title("Marker in Jakarta"));
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(jakarta));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(jakarta, zoomLevel));
         mMap.getUiSettings().setZoomControlsEnabled(true);

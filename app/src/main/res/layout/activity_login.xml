@@ -4,85 +4,120 @@
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_splash"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/bg"
     tools:context="rot.user.tekno.com.rothrow.Login">
 
-
-    <ImageView
-        android:paddingTop="10dp"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher"/>
-
     <EditText
-        android:paddingTop="50dp"
+        android:id="@+id/tUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:drawableLeft="@drawable/ic_email"
+        android:drawablePadding="17dp"
+        android:ems="10"
+        android:hint="Email"
         android:inputType="textPersonName"
-        android:hint="Username"
-        android:textColorHint="@android:color/white"
-        android:textColor="@android:color/white"
-        android:ems="10"
-        android:id="@+id/tUsername" />
+        android:paddingTop="210dp" />
 
-    <EditText
-        android:paddingTop="20dp"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:hint="Password"
-        android:textColorHint="@android:color/white"
-        android:textColor="@android:color/white"
-        android:ems="10"
-        android:id="@+id/tPassword" />
-    <Button
-        android:text="Login"
-        android:layout_width="fill_parent"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/tPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/ic_key"
+            android:drawablePadding="17dp"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:paddingTop="20dp" />
+
+        <ImageView
+            android:id="@+id/iv_show_pass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-40dp"
+            android:layout_marginTop="25dp"
+            android:layout_toRightOf="@+id/tPassword"
+            android:src="@drawable/ic_eye" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/lv_bikin_akun"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:layout_marginTop="15dp"
-        android:textSize="9pt"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp">
+
+        <TextView
+            android:id="@+id/txtBelumPunya"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Belum Punya Akun?" />
+
+        <TextView
+            android:id="@+id/daftar_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/txtBelumPunya"
+            android:text=" Daftar Disini"
+            android:textColor="#1E88E5" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_toRightOf="@+id/daftar_user"
+            android:text="Lupa Password?" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/password"
         android:layout_centerHorizontal="true"
-        android:id="@+id/btn_login" />
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp">
-        <TextView
-            android:text="Belum punya akun?"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:textColor="@android:color/white"
-            android:gravity="center"
-            android:id="@+id/textView3"
-            />
-        <TextView
-            android:text=" daftar disini"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@android:color/holo_green_light"
-            android:layout_marginTop="15dp"
-            android:id="@+id/daftar_user" />
-    </LinearLayout>
+        android:layout_margin="15dp"
+        android:background="@drawable/rounded_blue"
+        android:text="Login"
+        android:textColor="@android:color/white"
+        android:textSize="9pt"
+        android:textStyle="bold" />
 
     <TextView
-        android:text="Lupa password?"
-        android:layout_width="fill_parent"
+        android:id="@+id/tv_kebijakan"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@android:color/white"
-        android:layout_marginTop="15dp"
-        />
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"
+        android:text="@string/kebijakan"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tv_credit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:text="\u00A9 Copyright 2018. P.T. Rubbish On Throw is" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="registered by Universitas Trilogi" />
+
 </LinearLayout>

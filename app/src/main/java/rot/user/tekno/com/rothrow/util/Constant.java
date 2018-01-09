@@ -12,12 +12,12 @@ public class Constant {
     public static final String ENDPOINT_GET_PROFILE = BASE_URL + "user/profile/";
 
     public static final String ENDPOINT_GET_ORDER = BASE_URL + "order/getdata";
-    public static final String ENDPOINT_INSERT_ORDER = BASE_URL + "order/insert_order";
+    public static final String ENDPOINT_INSERT_ORDER = BASE_URL + "order/insert_order2";
+    public static final String ENDPOINT_UPDATE_ORDER = BASE_URL + "order/edit_order/";
 
     public static final String KEY_SHAREDPREFS_USER = "user";
     public static final String KEY_SHAREDPREFS_LOGIN_STATUS = "statusLogin";
     public static final String KEY_SHAREDPREFS_USER_DATA = "data";
     public static final String KEY_ID_PENGGUNA = "id";
-    public static final String KEY_ID_TRAVEL = "id_travel";
     public static final String KEY_SHAREDPREFS_TOKEN = "token";
 }
